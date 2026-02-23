@@ -1,6 +1,3 @@
-`pbpaste > xeyes_mugshot/README.md`
-
-```markdown
 # XEyes Mugshot
 
 Googly eyes overlay for any photo. Mouse-tracking pupils, scroll-wheel parallax,
@@ -132,4 +129,3 @@ These modules are designed for reuse in ThinkerToys (apps/nooviz):
 - `recording_shelf.js` — will evolve into a companion panel visualization
 
 No build step, no dependencies, plain browser JS with prototype-based classes.
-```
