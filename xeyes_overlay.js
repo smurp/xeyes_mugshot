@@ -36,7 +36,7 @@ function xeyes(params = {}) {
   const midY = (eye1Y + eye2Y) / 2;
 
   const svg = document.createElementNS(svgNamespace, "svg");
-  svg.setAttribute("viewBox", `0 0 ${overlayWidth} ${overlayHeight}`);
+  svg.setAttribute("viewBox", "0 0 " + overlayWidth + " " + overlayHeight);
   svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
   svg.style.width = '100%';
   svg.style.height = '100%';
@@ -45,23 +45,23 @@ function xeyes(params = {}) {
   svg.style.left = '0';
   svg.style.pointerEvents = 'none';
 
-  const defs = document.createElementNS(svgNamespace, "defs");
+  var defs = document.createElementNS(svgNamespace, "defs");
   svg.appendChild(defs);
 
-  const uid = 'xeyes-' + Math.random().toString(36).slice(2, 8);
+  var uid = 'xeyes-' + Math.random().toString(36).slice(2, 8);
 
   function createClipPath(id, cx, cy) {
-    const clip = document.createElementNS(svgNamespace, "clipPath");
+    var clip = document.createElementNS(svgNamespace, "clipPath");
     clip.setAttribute("id", id);
     if (isElliptical) {
-      const shape = document.createElementNS(svgNamespace, "ellipse");
+      var shape = document.createElementNS(svgNamespace, "ellipse");
       shape.setAttribute("cx", cx);
       shape.setAttribute("cy", cy);
       shape.setAttribute("rx", a);
       shape.setAttribute("ry", b);
       clip.appendChild(shape);
     } else {
-      const shape = document.createElementNS(svgNamespace, "circle");
+      var shape = document.createElementNS(svgNamespace, "circle");
       shape.setAttribute("cx", cx);
       shape.setAttribute("cy", cy);
       shape.setAttribute("r", eyeRadius);
@@ -72,7 +72,7 @@ function xeyes(params = {}) {
 
   function createEye(cx, cy) {
     if (isElliptical) {
-      const eye = document.createElementNS(svgNamespace, "ellipse");
+      var eye = document.createElementNS(svgNamespace, "ellipse");
       eye.setAttribute("cx", cx);
       eye.setAttribute("cy", cy);
       eye.setAttribute("rx", a);
@@ -82,7 +82,7 @@ function xeyes(params = {}) {
       eye.setAttribute("stroke-width", eyeStrokeWidth);
       return eye;
     }
-    const eye = document.createElementNS(svgNamespace, "circle");
+    var eye = document.createElementNS(svgNamespace, "circle");
     eye.setAttribute("cx", cx);
     eye.setAttribute("cy", cy);
     eye.setAttribute("r", eyeRadius);
@@ -93,7 +93,7 @@ function xeyes(params = {}) {
   }
 
   function createIris(cx, cy) {
-    const iris = document.createElementNS(svgNamespace, "circle");
+    var iris = document.createElementNS(svgNamespace, "circle");
     iris.setAttribute("cx", cx);
     iris.setAttribute("cy", cy);
     iris.setAttribute("r", irisRadius);
@@ -102,7 +102,7 @@ function xeyes(params = {}) {
   }
 
   function createPupil(cx, cy) {
-    const pupil = document.createElementNS(svgNamespace, "circle");
+    var pupil = document.createElementNS(svgNamespace, "circle");
     pupil.setAttribute("cx", cx);
     pupil.setAttribute("cy", cy);
     pupil.setAttribute("r", pupilRadius);
@@ -111,38 +111,38 @@ function xeyes(params = {}) {
   }
 
   function buildEye(cx, cy, index) {
-    const eye = createEye(cx, cy);
+    var eye = createEye(cx, cy);
     svg.appendChild(eye);
 
-    const clipId = `${uid}-clip-${index}`;
+    var clipId = uid + '-clip-' + index;
     defs.appendChild(createClipPath(clipId, cx, cy));
 
-    const g = document.createElementNS(svgNamespace, "g");
-    g.setAttribute("clip-path", `url(#${clipId})`);
+    var g = document.createElementNS(svgNamespace, "g");
+    g.setAttribute("clip-path", "url(#" + clipId + ")");
 
-    let iris = null;
+    var iris = null;
     if (irisRadius) {
       iris = createIris(cx, cy);
       g.appendChild(iris);
     }
-    const pupil = createPupil(cx, cy);
+    var pupil = createPupil(cx, cy);
     g.appendChild(pupil);
 
     svg.appendChild(g);
-    return { pupil, iris };
+    return { pupil: pupil, iris: iris };
   }
 
-  const e1 = buildEye(eye1X, eye1Y, 1);
-  const e2 = buildEye(eye2X, eye2Y, 2);
+  var e1 = buildEye(eye1X, eye1Y, 1);
+  var e2 = buildEye(eye2X, eye2Y, 2);
 
   overlayOn.appendChild(svg);
   overlayOn.style.position = 'relative';
 
   function screenToViewBox(clientX, clientY) {
-    const pt = svg.createSVGPoint();
+    var pt = svg.createSVGPoint();
     pt.x = clientX;
     pt.y = clientY;
-    const svgPt = pt.matrixTransform(svg.getScreenCTM().inverse());
+    var svgPt = pt.matrixTransform(svg.getScreenCTM().inverse());
     return svgPt;
   }
 
@@ -150,22 +150,22 @@ function xeyes(params = {}) {
     if (!isElliptical) {
       return eyeRadius - pupilRadius - (eyeStrokeWidth / 2);
     }
-    const cosA = Math.cos(angle);
-    const sinA = Math.sin(angle);
-    const edgeDist = (a * b) / Math.sqrt(
+    var cosA = Math.cos(angle);
+    var sinA = Math.sin(angle);
+    var edgeDist = (a * b) / Math.sqrt(
       (b * cosA) * (b * cosA) + (a * sinA) * (a * sinA)
     );
     return edgeDist - pupilRadius - (eyeStrokeWidth / 2);
   }
 
   function positionParts(eyeX, eyeY, targetX, targetY, parts) {
-    const dx = targetX - eyeX;
-    const dy = targetY - eyeY;
-    const angle = Math.atan2(dy, dx);
-    const maxDist = maxDistAtAngle(angle);
-    const distance = Math.min(Math.sqrt(dx * dx + dy * dy), maxDist);
-    const cx = eyeX + Math.cos(angle) * distance;
-    const cy = eyeY + Math.sin(angle) * distance;
+    var dx = targetX - eyeX;
+    var dy = targetY - eyeY;
+    var angle = Math.atan2(dy, dx);
+    var maxDist = maxDistAtAngle(angle);
+    var distance = Math.min(Math.sqrt(dx * dx + dy * dy), maxDist);
+    var cx = eyeX + Math.cos(angle) * distance;
+    var cy = eyeY + Math.sin(angle) * distance;
     parts.pupil.setAttribute('cx', cx);
     parts.pupil.setAttribute('cy', cy);
     if (parts.iris) {
@@ -174,31 +174,29 @@ function xeyes(params = {}) {
     }
   }
 
-  // -- Depth / convergence --
-  let depth = 0;
-  const depthStep = 0.1;
-  const minDepth = -1;
-  const maxDepth = 7;
-  let lastClientX = null;
-  let lastClientY = null;
+  var depth = 0;
+  var depthStep = 0.1;
+  var minDepth = -1;
+  var maxDepth = 7;
+  var lastClientX = null;
+  var lastClientY = null;
 
   function getConvergence() { return 1 - depth; }
 
-  // -- Wobble physics (spring-damper per eye) --
-  const wobble = [
+  var wobble = [
     { x: 0, y: 0, vx: 0, vy: 0 },
     { x: 0, y: 0, vx: 0, vy: 0 },
   ];
-  const spring = 0.15;
-  const damping = 0.75;
-  const accelScale = 0.8 * motionSensitivity;
-  let accelX = 0, accelY = 0;
-  let animating = false;
+  var spring = 0.15;
+  var damping = 0.75;
+  var accelScale = 0.8 * motionSensitivity;
+  var accelX = 0, accelY = 0;
+  var animating = false;
 
   function gazeTarget(eyeX) {
     if (lastClientX == null) return { x: eyeX, y: eyeRadius };
-    const mouse = screenToViewBox(lastClientX, lastClientY);
-    const c = getConvergence();
+    var mouse = screenToViewBox(lastClientX, lastClientY);
+    var c = getConvergence();
     return {
       x: mouse.x + (midX - eyeX) * (1 - c),
       y: mouse.y,
@@ -206,39 +204,39 @@ function xeyes(params = {}) {
   }
 
   function tick() {
-    const eyes = [
+    var eyes = [
       { ex: eye1X, ey: eye1Y, parts: e1, w: wobble[0] },
       { ex: eye2X, ey: eye2Y, parts: e2, w: wobble[1] },
     ];
 
-    let totalEnergy = 0;
-    for (const { ex, ey, parts, w } of eyes) {
-      const target = gazeTarget(ex);
+    var totalEnergy = 0;
+    for (var i = 0; i < eyes.length; i++) {
+      var eye = eyes[i];
+      var target = gazeTarget(eye.ex);
+      var w = eye.w;
 
       w.vx -= accelX * accelScale;
       w.vy -= accelY * accelScale;
-
       w.vx -= w.x * spring;
       w.vy -= w.y * spring;
-
       w.vx *= damping;
       w.vy *= damping;
-
       w.x += w.vx;
       w.y += w.vy;
 
-      positionParts(ex, ey, target.x + w.x, target.y + w.y, parts);
-
+      positionParts(eye.ex, eye.ey, target.x + w.x, target.y + w.y, eye.parts);
       totalEnergy += Math.abs(w.vx) + Math.abs(w.vy) + Math.abs(w.x) + Math.abs(w.y);
     }
 
     if (totalEnergy > 0.01 || Math.abs(accelX) + Math.abs(accelY) > 0.1) {
       requestAnimationFrame(tick);
     } else {
-      for (const w of wobble) { w.x = w.y = w.vx = w.vy = 0; }
-      for (const { ex, ey, parts } of eyes) {
-        const target = gazeTarget(ex);
-        positionParts(ex, ey, target.x, target.y, parts);
+      for (var j = 0; j < wobble.length; j++) {
+        wobble[j].x = wobble[j].y = wobble[j].vx = wobble[j].vy = 0;
+      }
+      for (var k = 0; k < eyes.length; k++) {
+        var t = gazeTarget(eyes[k].ex);
+        positionParts(eyes[k].ex, eyes[k].ey, t.x, t.y, eyes[k].parts);
       }
       animating = false;
     }
@@ -253,13 +251,13 @@ function xeyes(params = {}) {
 
   function recompute() {
     if (!animating) {
-      const eyes = [
+      var eyes = [
         { ex: eye1X, ey: eye1Y, parts: e1 },
         { ex: eye2X, ey: eye2Y, parts: e2 },
       ];
-      for (const { ex, ey, parts } of eyes) {
-        const target = gazeTarget(ex);
-        positionParts(ex, ey, target.x, target.y, parts);
+      for (var i = 0; i < eyes.length; i++) {
+        var target = gazeTarget(eyes[i].ex);
+        positionParts(eyes[i].ex, eyes[i].ey, target.x, target.y, eyes[i].parts);
       }
     }
   }
@@ -270,50 +268,46 @@ function xeyes(params = {}) {
     recompute();
   }
 
-  watchMotionOn.addEventListener('mousemove', (evt) => {
+  watchMotionOn.addEventListener('mousemove', function(evt) {
     updateFromEvent(evt.clientX, evt.clientY);
   });
 
-  watchMotionOn.addEventListener('wheel', (evt) => {
+  watchMotionOn.addEventListener('wheel', function(evt) {
     evt.preventDefault();
-    const delta = evt.deltaY < 0 ? depthStep : -depthStep;
+    var delta = evt.deltaY < 0 ? depthStep : -depthStep;
     depth = Math.max(minDepth, Math.min(maxDepth, depth + delta));
     recompute();
   }, { passive: false });
 
-  let lastPinchDist = null;
+  var lastPinchDist = null;
 
-  watchMotionOn.addEventListener('touchmove', (evt) => {
+  watchMotionOn.addEventListener('touchmove', function(evt) {
     if (evt.touches.length === 1) {
-      const touch = evt.touches[0];
-      updateFromEvent(touch.clientX, touch.clientY);
+      updateFromEvent(evt.touches[0].clientX, evt.touches[0].clientY);
     } else if (evt.touches.length === 2) {
       evt.preventDefault();
-      const dx = evt.touches[0].clientX - evt.touches[1].clientX;
-      const dy = evt.touches[0].clientY - evt.touches[1].clientY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+      var dx = evt.touches[0].clientX - evt.touches[1].clientX;
+      var dy = evt.touches[0].clientY - evt.touches[1].clientY;
+      var dist = Math.sqrt(dx * dx + dy * dy);
       if (lastPinchDist !== null) {
-        const scale = (lastPinchDist - dist) * 0.008;
+        var scale = (lastPinchDist - dist) * 0.008;
         depth = Math.max(minDepth, Math.min(maxDepth, depth + scale));
-        const mx = (evt.touches[0].clientX + evt.touches[1].clientX) / 2;
-        const my = (evt.touches[0].clientY + evt.touches[1].clientY) / 2;
-        lastClientX = mx;
-        lastClientY = my;
+        lastClientX = (evt.touches[0].clientX + evt.touches[1].clientX) / 2;
+        lastClientY = (evt.touches[0].clientY + evt.touches[1].clientY) / 2;
         recompute();
       }
       lastPinchDist = dist;
     }
   }, { passive: false });
 
-  watchMotionOn.addEventListener('touchend', () => {
+  watchMotionOn.addEventListener('touchend', function() {
     lastPinchDist = null;
   });
 
-  // -- Device motion: accelerometer --
   if (motionEnabled && typeof DeviceMotionEvent !== 'undefined') {
     function startListening() {
-      window.addEventListener('devicemotion', (evt) => {
-        const acc = evt.accelerationIncludingGravity;
+      window.addEventListener('devicemotion', function(evt) {
+        var acc = evt.accelerationIncludingGravity;
         if (!acc) return;
         accelX = (acc.x || 0);
         accelY = -(acc.y || 0);
@@ -324,10 +318,10 @@ function xeyes(params = {}) {
     }
 
     if (typeof DeviceMotionEvent.requestPermission === 'function') {
-      const requestOnClick = () => {
-        DeviceMotionEvent.requestPermission().then(state => {
+      var requestOnClick = function() {
+        DeviceMotionEvent.requestPermission().then(function(state) {
           if (state === 'granted') startListening();
-        }).catch(() => {});
+        }).catch(function() {});
         document.removeEventListener('click', requestOnClick);
       };
       document.addEventListener('click', requestOnClick);
@@ -339,13 +333,14 @@ function xeyes(params = {}) {
 
 function parseNumAttr(val, fallback) {
   if (val == null) return fallback;
-  const n = parseFloat(val);
+  var n = parseFloat(val);
   return isNaN(n) ? fallback : n;
 }
 
-// Auto-initialize any element with data-xeyes attribute
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('[data-xeyes]').forEach(el => {
+document.addEventListener('DOMContentLoaded', function() {
+  var els = document.querySelectorAll('[data-xeyes]');
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
     xeyes({
       overlayOn: el,
       watchMotionOn: document.body,
@@ -366,5 +361,5 @@ document.addEventListener('DOMContentLoaded', () => {
       motionEnabled: el.dataset.xeyesMotion !== 'false',
       motionSensitivity: parseNumAttr(el.dataset.xeyesMotionSensitivity, 1.0),
     });
-  });
+  }
 });

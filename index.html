@@ -123,28 +123,32 @@
   <script src="div_recorder.js"></script>
   <script src="recording_shelf.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const mugshot = document.querySelector('.mugshot');
+    document.addEventListener('DOMContentLoaded', function() {
+      var mugshot = document.querySelector('.mugshot');
 
-      const recorder = new DivRecorder({ target: mugshot, fps: 30 });
-      const shelf = new RecordingShelf({
+      var recorder = new DivRecorder({ target: mugshot, fps: 30 });
+      var shelf = new RecordingShelf({
         container: document.querySelector('.shelf-mount'),
         target: mugshot,
       });
 
-      // Space bar: hold to record
-      document.addEventListener('keydown', (e) => {
+      if (!recorder.mp4Supported) {
+        var hint = document.querySelector('.rec-hint');
+        hint.textContent += ' (.mp4 not supported in this browser, .webm only)';
+      }
+
+      document.addEventListener('keydown', function(e) {
         if (e.code === 'Space' && !e.repeat && !recorder.isRecording) {
           e.preventDefault();
           recorder.start();
         }
       });
 
-      document.addEventListener('keyup', (e) => {
+      document.addEventListener('keyup', function(e) {
         if (e.code === 'Space' && recorder.isRecording) {
           e.preventDefault();
-          recorder.stop().then((result) => {
-            if (result) shelf.addRecording(result.blob, result.name);
+          recorder.stop().then(function(result) {
+            if (result) shelf.addRecording(result.blobs, result.name);
           });
         }
       });
