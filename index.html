@@ -45,11 +45,31 @@
       border-radius: 3px;
       color: #adf;
     }
+    .rec-hint {
+      margin-top: 0.8rem;
+      font-size: 0.75rem;
+      color: #999;
+      text-align: center;
+    }
+    .rec-hint kbd {
+      display: inline-block;
+      background: #333;
+      border: 1px solid #555;
+      border-radius: 3px;
+      padding: 0.1em 0.5em;
+      font-family: inherit;
+      font-size: 0.9em;
+      color: #ccc;
+      box-shadow: 0 1px 0 #222;
+    }
+    .shelf-mount {
+      display: flex;
+      justify-content: center;
+    }
   </style>
 </head>
 <body>
   <h1>XEyes Mugshot</h1>
-
   <!--
     Tuning guide (all values in the image's native pixel space, 640x480):
       data-xeyes-radius   = eye white circle radius
@@ -61,7 +81,6 @@
       data-xeyes-stroke    = eye outline color (try "none" to hide)
       data-xeyes-stroke-width = outline thickness
       data-xeyes-pupil-fill = pupil color
-
     The photo is 640x480, center is (320, 240).
     Eyes measured at approximately:
       Left eye:  (285, 193)
@@ -94,6 +113,42 @@
     to show just the pupils floating over your real eyes.
   </div>
 
+  <div class="rec-hint">
+    Hold <kbd>Space</kbd> to record a clip. Scroll wheel adjusts gaze depth.
+  </div>
+
+  <div class="shelf-mount"></div>
+
   <script src="xeyes_overlay.js"></script>
+  <script src="div_recorder.js"></script>
+  <script src="recording_shelf.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const mugshot = document.querySelector('.mugshot');
+
+      const recorder = new DivRecorder({ target: mugshot, fps: 30 });
+      const shelf = new RecordingShelf({
+        container: document.querySelector('.shelf-mount'),
+        target: mugshot,
+      });
+
+      // Space bar: hold to record
+      document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && !e.repeat && !recorder.isRecording) {
+          e.preventDefault();
+          recorder.start();
+        }
+      });
+
+      document.addEventListener('keyup', (e) => {
+        if (e.code === 'Space' && recorder.isRecording) {
+          e.preventDefault();
+          recorder.stop().then((result) => {
+            if (result) shelf.addRecording(result.blob, result.name);
+          });
+        }
+      });
+    });
+  </script>
 </body>
 </html>

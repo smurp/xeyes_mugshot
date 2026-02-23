@@ -185,15 +185,14 @@ function xeyes(params = {}) {
   function getConvergence() { return 1 - depth; }
 
   // -- Wobble physics (spring-damper per eye) --
-  // Each eye has independent wobble so shaking makes them rattle differently
   const wobble = [
-    { x: 0, y: 0, vx: 0, vy: 0 },  // left eye
-    { x: 0, y: 0, vx: 0, vy: 0 },  // right eye
+    { x: 0, y: 0, vx: 0, vy: 0 },
+    { x: 0, y: 0, vx: 0, vy: 0 },
   ];
-  const spring = 0.15;    // pull back toward gaze target
-  const damping = 0.75;   // friction (1 = no friction, 0 = instant stop)
-  const accelScale = 0.8 * motionSensitivity;  // how much device motion displaces
-  let accelX = 0, accelY = 0;  // latest device acceleration
+  const spring = 0.15;
+  const damping = 0.75;
+  const accelScale = 0.8 * motionSensitivity;
+  let accelX = 0, accelY = 0;
   let animating = false;
 
   function gazeTarget(eyeX) {
@@ -216,33 +215,26 @@ function xeyes(params = {}) {
     for (const { ex, ey, parts, w } of eyes) {
       const target = gazeTarget(ex);
 
-      // Acceleration kicks the wobble (device tilts right = eyes lag left)
       w.vx -= accelX * accelScale;
       w.vy -= accelY * accelScale;
 
-      // Spring pulls wobble back toward zero
       w.vx -= w.x * spring;
       w.vy -= w.y * spring;
 
-      // Damping
       w.vx *= damping;
       w.vy *= damping;
 
-      // Integrate
       w.x += w.vx;
       w.y += w.vy;
 
-      // Apply wobble offset to gaze target
       positionParts(ex, ey, target.x + w.x, target.y + w.y, parts);
 
       totalEnergy += Math.abs(w.vx) + Math.abs(w.vy) + Math.abs(w.x) + Math.abs(w.y);
     }
 
-    // Keep animating while there's wobble energy, or while accel is active
     if (totalEnergy > 0.01 || Math.abs(accelX) + Math.abs(accelY) > 0.1) {
       requestAnimationFrame(tick);
     } else {
-      // Settle exactly
       for (const w of wobble) { w.x = w.y = w.vx = w.vy = 0; }
       for (const { ex, ey, parts } of eyes) {
         const target = gazeTarget(ex);
@@ -261,7 +253,6 @@ function xeyes(params = {}) {
 
   function recompute() {
     if (!animating) {
-      // No wobble active, just position directly
       const eyes = [
         { ex: eye1X, ey: eye1Y, parts: e1 },
         { ex: eye2X, ey: eye2Y, parts: e2 },
@@ -271,7 +262,6 @@ function xeyes(params = {}) {
         positionParts(ex, ey, target.x, target.y, parts);
       }
     }
-    // If animating, tick() will pick up new gaze target automatically
   }
 
   function updateFromEvent(clientX, clientY) {
@@ -325,20 +315,15 @@ function xeyes(params = {}) {
       window.addEventListener('devicemotion', (evt) => {
         const acc = evt.accelerationIncludingGravity;
         if (!acc) return;
-        // acc.x: positive = tilt right; acc.y: positive = tilt back
-        // We want: tilt right → eyes lag left (negative x wobble)
-        // Portrait orientation assumed; works for laptop too
         accelX = (acc.x || 0);
-        accelY = -(acc.y || 0);  // screen Y is inverted from gravity Y
+        accelY = -(acc.y || 0);
         if (Math.abs(accelX) + Math.abs(accelY) > 0.3) {
           ensureAnimating();
         }
       });
     }
 
-    // iOS 13+ requires permission request
     if (typeof DeviceMotionEvent.requestPermission === 'function') {
-      // Need user gesture — add a one-time click handler
       const requestOnClick = () => {
         DeviceMotionEvent.requestPermission().then(state => {
           if (state === 'granted') startListening();
