@@ -8,10 +8,10 @@ device-motion wobble, and built-in video recording with dual-format export.
 ```bash
 cd xeyes_mugshot
 cp /path/to/your/photo.jpeg mugshot.jpeg
-npx serve .
+npx serve --port 4545 .
 ```
 
-Open http://localhost:3000
+Open http://localhost:4545
 
 ## Files
 
@@ -57,6 +57,7 @@ Eyes auto-initialize on `DOMContentLoaded` for all `[data-xeyes]` elements.
 | `data-xeyes-iris-radius` | — | If set, draws an iris ring between white and pupil |
 | `data-xeyes-iris-color` | DarkBlue | Iris fill color |
 | `data-xeyes-ipd` | 120 | Interpupillary distance (px in image space) |
+| `data-xeyes-tip` | 0 | Head tilt: right eye raised this many px above left; both eyes pivot around their midpoint and ellipses rotate to match |
 | `data-xeyes-voffset` | 0 | Vertical offset from image center (negative = up) |
 | `data-xeyes-hoffset` | 0 | Horizontal offset from image center (positive = right) |
 | `data-xeyes-fill` | white | Eye white fill (`transparent` hides it) |
@@ -119,6 +120,7 @@ All coordinates are in the image's native pixel space. To align eyes:
 5. `voffset` = midpoint of eyes minus image center, vertically
 6. `radius` = roughly the visible eye radius in pixels
 7. Set `lateral-radius` wider than `radius` for realistic elliptical eyes
+8. If the head is tilted, set `tip` to the vertical difference between the eyes (right eye Y minus left eye Y, in pixels); both eyes and their ellipse orientation will tilt to match
 
 ## Integration with ThinkerToys
 

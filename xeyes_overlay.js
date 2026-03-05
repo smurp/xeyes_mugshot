@@ -15,6 +15,7 @@ function xeyes(params = {}) {
   const eyeStroke = params.eyeStroke || "black";
   const eyeStrokeWidth = params.eyeStrokeWidth ?? 2;
   const pupilFill = params.pupilFill || "black";
+  const tip = params.tip ?? 0;
   const motionEnabled = params.motionEnabled ?? true;
   const motionSensitivity = params.motionSensitivity ?? 1.0;
 
@@ -29,11 +30,13 @@ function xeyes(params = {}) {
   const overlayHeight = overlayRect.height;
 
   const eye1X = overlayWidth / 2 - interpupilaryDistance / 2 + horizontalOffset;
-  const eye1Y = overlayHeight / 2 + verticalOffset;
+  const eye1Y = overlayHeight / 2 + verticalOffset + tip / 2;
   const eye2X = overlayWidth / 2 + interpupilaryDistance / 2 + horizontalOffset;
-  const eye2Y = overlayHeight / 2 + verticalOffset;
+  const eye2Y = overlayHeight / 2 + verticalOffset - tip / 2;
   const midX = (eye1X + eye2X) / 2;
   const midY = (eye1Y + eye2Y) / 2;
+  const tiltAngle = Math.atan2(eye2Y - eye1Y, eye2X - eye1X);
+  const tiltDegrees = tiltAngle * 180 / Math.PI;
 
   const svg = document.createElementNS(svgNamespace, "svg");
   svg.setAttribute("viewBox", "0 0 " + overlayWidth + " " + overlayHeight);
@@ -59,6 +62,7 @@ function xeyes(params = {}) {
       shape.setAttribute("cy", cy);
       shape.setAttribute("rx", a);
       shape.setAttribute("ry", b);
+      if (tiltDegrees) shape.setAttribute("transform", "rotate(" + tiltDegrees + " " + cx + " " + cy + ")");
       clip.appendChild(shape);
     } else {
       var shape = document.createElementNS(svgNamespace, "circle");
@@ -77,6 +81,7 @@ function xeyes(params = {}) {
       eye.setAttribute("cy", cy);
       eye.setAttribute("rx", a);
       eye.setAttribute("ry", b);
+      if (tiltDegrees) eye.setAttribute("transform", "rotate(" + tiltDegrees + " " + cx + " " + cy + ")");
       eye.setAttribute("fill", eyeFill);
       eye.setAttribute("stroke", eyeStroke);
       eye.setAttribute("stroke-width", eyeStrokeWidth);
@@ -150,8 +155,9 @@ function xeyes(params = {}) {
     if (!isElliptical) {
       return eyeRadius - pupilRadius - (eyeStrokeWidth / 2);
     }
-    var cosA = Math.cos(angle);
-    var sinA = Math.sin(angle);
+    var localAngle = angle - tiltAngle;
+    var cosA = Math.cos(localAngle);
+    var sinA = Math.sin(localAngle);
     var edgeDist = (a * b) / Math.sqrt(
       (b * cosA) * (b * cosA) + (a * sinA) * (a * sinA)
     );
@@ -359,6 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
       eyeStrokeWidth: parseNumAttr(el.dataset.xeyesStrokeWidth, 2),
       pupilFill: el.dataset.xeyesPupilFill || "black",
       motionEnabled: el.dataset.xeyesMotion !== 'false',
+      tip: parseNumAttr(el.dataset.xeyesTip, 0),
       motionSensitivity: parseNumAttr(el.dataset.xeyesMotionSensitivity, 1.0),
     });
   }
